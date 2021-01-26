@@ -1,0 +1,55 @@
+{% extends "_layout.html" %}
+{% block title %}
+{% endblock %}
+{% block header %}
+{% endblock %}
+{% block content %}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  
+  <h3 class="">Homepage</h3>
+  
+  <form action={{ url_for('users.search') }} class="form-inline ml-3" method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="d-flex">
+      <input class="form-control mr-sm-1" type="search" name="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </div>
+  </form>
+
+</div>
+
+  {% for user in users %}
+  <div class="row mb-5 border rounded bg-light p-2">
+    <div class="col">
+      <div class="mb-3">
+        <a href="/users/{{ user.username }}" style="font-size: 20px;">@{{ user.username }}</a>
+      </div>
+      <img class="mb-3" style="height: 100px;width: 100px;border-radius: 50%;" src="https://sunny-nextagram.s3.amazonaws.com/{{ user.profile_picture }}" alt="userProfilePicture" />
+      <div class="d-flex flex-column mb-3">
+        <small>Followers: <span id="followers_count-{{ user.id }}">{{ user.fans | length }}</span></small>
+        <small>Following: <span id="following_count-{{ user.id }}">{{ user.idols | length }}</span></small>
+      </div>
+      <div>
+      {% if current_user.is_authenticated and current_user != user %}
+        {% include 'follow_unfollow_btn.html' %}
+      {% endif %}
+      </div>
+    </div>
+      {% if user != current_user and user.status == "private" and current_user not in user.followers %}
+        <div class="row col-sm-8 col-md-10 d-flex flex-column justify-content-center align-items-center" id="private_container-{{ user.id }}">
+          {% include 'private_container.html' %}
+        </div>
+      {% else %}
+        <div id="picture_container-{{ user.id }}" class="row col-sm-8 col-md-10">
+          {% for image in user.ordered_images %}
+          <img style="height: 100px; width: 140px;" class="m-1 border rounded" src="https://sunny-nextagram.s3.amazonaws.com/user_images/{{ image.image_name }}" />
+          {% endfor %}
+        </div>
+      {% endif %}
+
+  </div>
+  {% endfor %}
+
+
+{% endblock %}

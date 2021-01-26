@@ -1,0 +1,61 @@
+{% extends "_layout.html" %}
+{% block content %}
+
+{% if current_user.is_authenticated %}
+
+<h2>Change Profile Picture</h2>
+<form action="{{ url_for('users.upload_img') }}" method="POST" enctype="multipart/form-data" class="mb-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="d-flex align-items-center">
+        <img class="profile_pic" src={{ url }} />
+        <div class="d-flex flex-column ml-4">
+            <label for="image"></label>
+            <input type="file" name="image">
+            <br>
+            <button type="submit" class="btn-primary">Upload</button>
+        </div>
+    </div>
+</form>
+<br>
+<h2>Edit User Profile</h2>
+<form action="{{ url_for('users.update', id=current_user.id) }}" method="POST" class='mb-4'>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+    <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" class="form-control" name="username" value={{current_user.username}}>
+    </div>
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" name="email" value={{current_user.email}}>
+    </div>
+    <div class="form-group">
+        <label for="description">Description</label>
+        <input type="text" class="form-control" name="description" value={{current_user.description}}>
+    </div>
+    <div class="form-group">
+        <label for="current_password">Current Password</label>
+        <input type="password" class="form-control" name="current_password">
+    </div>
+    <div class="form-group">
+        <label for="new_password">New Password</label>
+        <input type="password" class="form-control" name="new_password">
+        <small class="text-muted">* Please key in your <strong>Current password</strong> before assigning a <strong>New
+                password</strong></small>
+    </div>
+    <div class="form-group">
+        <div class="form-check">
+            {% if current_user.status == "public" %}
+            <input type="checkbox" class="form-check-input" name="profile_status" value="private">
+            <label class="form-check-label" for="profile_status">Make profile private ?</label>
+            {% else %}
+            <input type="checkbox" class="form-check-input" name="profile_status" value="private" checked>
+            <label class="form-check-label" for="profile_status">Make profile private ? <small class="text-muted">(uncheck the box to make your profile Public)</small></label>
+            {% endif %}
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+
+{% endif %}
+
+{% endblock %}
